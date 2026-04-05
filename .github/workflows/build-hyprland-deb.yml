@@ -1,0 +1,73 @@
+name: Build Hyprland .deb Package
+
+on:
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+  schedule:
+    - cron: '0 0 * * 0' # Optional: Run weekly to get the latest Hyprland updates
+
+jobs:
+  build-deb:
+    # Hyprland requires very recent dependencies; using the latest Ubuntu is recommended
+    runs-on: ubuntu-24.04 
+    
+    steps:
+      - name: Checkout Hyprland Repository
+        uses: actions/checkout@v4
+        with:
+          repository: hyprwm/Hyprland
+          submodules: recursive # Important: Hyprland relies on submodules like wlroots
+
+      - name: Install Build Dependencies
+        # Note: These are standard dependencies, but you may need to adjust them based 
+        # on the specific version of Hyprland and Ubuntu you are using.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake meson ninja-build pkg-config gettext \
+            libwayland-dev libxkbcommon-dev libpixman-1-dev libwlroots-dev \
+            libinput-dev libdrm-dev libdisplay-info-dev libglib2.0-dev \
+            libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
+            libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
+            libxcb-xfixes0-dev xwayland hwdata
+
+      - name: Build Hyprland
+        run: |
+          # Hyprland uses CMake
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          make -j$(nproc)
+          
+      - name: Prepare DEBIAN Package Structure
+        run: |
+          # Create a fakeroot directory for packaging
+          mkdir -p hyprland-deb/DEBIAN
+          
+          # Install the built files into the fakeroot directory
+          cd build
+          make install DESTDIR=../hyprland-deb
+          cd ..
+
+          # Create the DEBIAN control file
+          cat <<EOF > hyprland-deb/DEBIAN/control
+          Package: hyprland
+          Version: $(git describe --tags --always)
+          Section: x11
+          Priority: optional
+          Architecture: amd64
+          Maintainer: Your Name <your@email.com>
+          Depends: libc6, libwayland-client0, libwayland-server0, libxkbcommon0, xwayland
+          Description: Hyprland - a dynamic tiling Wayland compositor
+          EOF
+
+      - name: Build .deb package
+        run: |
+          dpkg-deb --build hyprland-deb
+          # Rename the package for clarity
+          mv hyprland-deb.deb hyprland-$(git describe --tags --always)-amd64.deb
+
+      - name: Upload .deb Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hyprland-package
+          path: hyprland-*.deb
