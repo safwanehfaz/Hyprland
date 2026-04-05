@@ -28,7 +28,18 @@ jobs:
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
             libxcb-xfixes0-dev xwayland hwdata \
             glslang-dev glslang-tools wayland-protocols libvulkan-dev \
-            libseat-dev libgbm-dev libudev-dev
+            libseat-dev libgbm-dev libudev-dev libpugixml-dev
+
+      - name: Build and Install hyprwayland-scanner
+        run: |
+          # Clone and build hyprwayland-scanner
+          cd ..
+          git clone https://github.com/hyprwm/hyprwayland-scanner.git
+          cd hyprwayland-scanner
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
 
       - name: Build and Install Aquamarine
         run: |
@@ -42,7 +53,7 @@ jobs:
           cmake --build build -j$(nproc)
           sudo cmake --install build
           
-          # Go back to the Hyprland directory for the next steps
+          # Go back to the Hyprland directory for the main build
           cd ../Hyprland
 
       - name: Build Hyprland
