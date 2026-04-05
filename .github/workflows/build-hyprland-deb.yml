@@ -4,7 +4,6 @@ on:
   workflow_dispatch: # Allows you to run this manually from the Actions tab
   schedule:
     - cron: '0 0 * * 0' # Optional: Run weekly to get the latest Hyprland updates
-
 jobs:
   build-deb:
     runs-on: ubuntu-24.04 
@@ -32,16 +31,15 @@ jobs:
             libxcb-xfixes0-dev xwayland hwdata \
             glslang-dev glslang-tools wayland-protocols libvulkan-dev \
             libseat-dev libgbm-dev libudev-dev libpugixml-dev \
-            libmtdev-dev libevdev-dev libwacom-dev
+            libmtdev-dev libevdev-dev libwacom-dev \
+            libfmt-dev libspdlog-dev
 
       - name: Build and Install libinput
         run: |
           cd ..
           git clone https://gitlab.freedesktop.org/libinput/libinput.git
           cd libinput
-          # Checkout version 1.26.0
           git checkout 1.26.0
-          # Disable docs, tests, and GUI to speed up the build
           meson setup build --prefix=/usr -Ddocumentation=false -Dtests=false -Ddebug-gui=false
           ninja -C build
           sudo ninja -C build install
@@ -76,6 +74,17 @@ jobs:
           cmake --build build -j$(nproc)
           sudo cmake --install build
           cd ../Hyprland
+
+      - name: Build and Install hyprlang
+        run: |
+          cd ..
+          git clone https://github.com/hyprwm/hyprlang.git
+          cd hyprlang
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
+          
       - name: Build Hyprland
         run: |
           # Hyprland uses CMake
