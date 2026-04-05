@@ -38,7 +38,7 @@ jobs:
             libdrm-dev libdisplay-info-dev libglib2.0-dev \
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
-            libxcb-xfixes0-dev xwayland hwdata \
+            libxcb-xfixes0-dev xwayland hwdata libxcb-errors-dev \
             glslang-dev glslang-tools wayland-protocols libvulkan-dev \
             libseat-dev libgbm-dev libudev-dev libpugixml-dev \
             libinput-dev \
