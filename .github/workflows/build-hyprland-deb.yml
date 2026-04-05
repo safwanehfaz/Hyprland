@@ -109,6 +109,16 @@ jobs:
           cmake --build build -j$(nproc)
           sudo cmake --install build
           cd ../Hyprland
+      
+      - name: Build and Install hyprgraphics
+        run: |
+          cd ..
+          git clone https://github.com/hyprwm/hyprgraphics.git
+          cd hyprgraphics
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
           
       - name: Build Hyprland
         run: |
