@@ -16,7 +16,7 @@ jobs:
         with:
           repository: hyprwm/Hyprland
           submodules: recursive # Important: Hyprland relies on submodules like wlroots
-
+      
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
@@ -27,7 +27,7 @@ jobs:
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
             libxcb-xfixes0-dev xwayland hwdata \
-            glslang-dev wayland-protocols libvulkan-dev
+            glslang-dev glslang-tools wayland-protocols libvulkan-dev
 
       - name: Build Hyprland
         run: |
