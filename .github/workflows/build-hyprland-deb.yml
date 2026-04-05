@@ -23,16 +23,29 @@ jobs:
           sudo apt-get install -y \
             build-essential cmake meson ninja-build pkg-config gettext \
             libwayland-dev libxkbcommon-dev libpixman-1-dev libwlroots-dev \
-            libinput-dev libdrm-dev libdisplay-info-dev libglib2.0-dev \
+            libdrm-dev libdisplay-info-dev libglib2.0-dev \
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
             libxcb-xfixes0-dev xwayland hwdata \
             glslang-dev glslang-tools wayland-protocols libvulkan-dev \
-            libseat-dev libgbm-dev libudev-dev libpugixml-dev
+            libseat-dev libgbm-dev libudev-dev libpugixml-dev \
+            libmtdev-dev libevdev-dev libwacom-dev
+
+      - name: Build and Install libinput
+        run: |
+          cd ..
+          git clone https://gitlab.freedesktop.org/libinput/libinput.git
+          cd libinput
+          # Checkout version 1.26.0
+          git checkout 1.26.0
+          # Disable docs, tests, and GUI to speed up the build
+          meson setup build --prefix=/usr -Ddocumentation=false -Dtests=false -Ddebug-gui=false
+          ninja -C build
+          sudo ninja -C build install
+          cd ../Hyprland
 
       - name: Build and Install hyprwayland-scanner
         run: |
-          # Clone and build hyprwayland-scanner
           cd ..
           git clone https://github.com/hyprwm/hyprwayland-scanner.git
           cd hyprwayland-scanner
@@ -41,21 +54,25 @@ jobs:
           sudo cmake --install build
           cd ../Hyprland
 
-      - name: Build and Install Aquamarine
+      - name: Build and Install hyprutils
         run: |
-          # Clone aquamarine outside the hyprland directory
           cd ..
-          git clone https://github.com/hyprwm/aquamarine.git
-          cd aquamarine
-          
-          # Build and install aquamarine
+          git clone https://github.com/hyprwm/hyprutils.git
+          cd hyprutils
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           sudo cmake --install build
-          
-          # Go back to the Hyprland directory for the main build
           cd ../Hyprland
 
+      - name: Build and Install Aquamarine
+        run: |
+          cd ..
+          git clone https://github.com/hyprwm/aquamarine.git
+          cd aquamarine
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
       - name: Build Hyprland
         run: |
           # Hyprland uses CMake
