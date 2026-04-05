@@ -18,8 +18,6 @@ jobs:
           submodules: recursive # Important: Hyprland relies on submodules like wlroots
 
       - name: Install Build Dependencies
-        # Note: These are standard dependencies, but you may need to adjust them based 
-        # on the specific version of Hyprland and Ubuntu you are using.
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -28,7 +26,8 @@ jobs:
             libinput-dev libdrm-dev libdisplay-info-dev libglib2.0-dev \
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
-            libxcb-xfixes0-dev xwayland hwdata
+            libxcb-xfixes0-dev xwayland hwdata \
+            glslang-dev wayland-protocols libvulkan-dev vulkan-headers
 
       - name: Build Hyprland
         run: |
