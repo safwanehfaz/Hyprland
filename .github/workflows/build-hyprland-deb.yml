@@ -27,7 +27,23 @@ jobs:
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
             libxcb-xfixes0-dev xwayland hwdata \
-            glslang-dev glslang-tools wayland-protocols libvulkan-dev
+            glslang-dev glslang-tools wayland-protocols libvulkan-dev \
+            libseat-dev libgbm-dev libudev-dev
+
+      - name: Build and Install Aquamarine
+        run: |
+          # Clone aquamarine outside the hyprland directory
+          cd ..
+          git clone https://github.com/hyprwm/aquamarine.git
+          cd aquamarine
+          
+          # Build and install aquamarine
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          
+          # Go back to the Hyprland directory for the next steps
+          cd ../Hyprland
 
       - name: Build Hyprland
         run: |
