@@ -7,20 +7,23 @@ on:
 
 jobs:
   build-deb:
-    # Hyprland requires very recent dependencies; using the latest Ubuntu is recommended
     runs-on: ubuntu-24.04 
+    env:
+      CC: gcc-14
+      CXX: g++-14
     
     steps:
       - name: Checkout Hyprland Repository
         uses: actions/checkout@v4
         with:
           repository: hyprwm/Hyprland
-          submodules: recursive # Important: Hyprland relies on submodules like wlroots
-      
+          submodules: recursive
+
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            gcc-14 g++-14 \
             build-essential cmake meson ninja-build pkg-config gettext \
             libwayland-dev libxkbcommon-dev libpixman-1-dev libwlroots-dev \
             libdrm-dev libdisplay-info-dev libglib2.0-dev \
