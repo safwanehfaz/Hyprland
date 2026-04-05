@@ -100,6 +100,15 @@ jobs:
           cmake --install build
           cd "$GITHUB_WORKSPACE"
 
+      - name: Build and Install hyprwire
+        run: |
+          cd "$(dirname "$GITHUB_WORKSPACE")"
+          git clone https://github.com/hyprwm/hyprwire.git
+          cd hyprwire
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          cmake --install build
+          cd "$GITHUB_WORKSPACE"
 
       - name: Build and Install hyprcursor
         env:
