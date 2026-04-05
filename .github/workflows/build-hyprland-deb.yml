@@ -152,16 +152,13 @@ jobs:
           cmake --build build -j$(nproc)
 
           # Create the DEBIAN control file
+          git fetch --tags --force
           cat <<EOF > hyprland-deb/DEBIAN/control
           Package: hyprland
-          Version: $(git describe --tags --always)
+          Version: $(git describe --tags `git rev-list --tags --max-count=1`)
           Section: x11
           Priority: optional
-          Architecture: amd64
-          Maintainer: Your Name <your@email.com>
-          Depends: libc6, libwayland-client0, libwayland-server0, libxkbcommon0, xwayland
-          Description: Hyprland - a dynamic tiling Wayland compositor
-          EOF
+          Architecture: $(dpkg --print-architecture)
 
       - name: Build .deb package
         run: |
