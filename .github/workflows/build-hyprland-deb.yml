@@ -55,55 +55,45 @@ jobs:
 
       - name: Build and Install hyprwayland-scanner
         run: |
-          cd ..
+          cd "$(dirname "$GITHUB_WORKSPACE")"
           git clone https://github.com/hyprwm/hyprwayland-scanner.git
           cd hyprwayland-scanner
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           cmake --install build
-          cd ../Hyprland
+          cd "$GITHUB_WORKSPACE"
 
       - name: Build and Install hyprutils
         run: |
-          cd ..
+          cd "$(dirname "$GITHUB_WORKSPACE")"
           git clone https://github.com/hyprwm/hyprutils.git
           cd hyprutils
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           cmake --install build
-          cd ../Hyprland
+          cd "$GITHUB_WORKSPACE"
 
       - name: Build and Install Aquamarine
         run: |
-          cd ..
+          cd "$(dirname "$GITHUB_WORKSPACE")"
           git clone https://github.com/hyprwm/aquamarine.git
           cd aquamarine
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           cmake --install build
-          cd ../Hyprland
+          cd "$GITHUB_WORKSPACE"
 
       - name: Build and Install hyprlang
         run: |
-          cd ..
+          cd "$(dirname "$GITHUB_WORKSPACE")"
           git clone https://github.com/hyprwm/hyprlang.git
           cd hyprlang
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           cmake --install build
-          cd ../Hyprland
+          cd "$GITHUB_WORKSPACE"
 
-      - name: Build and Install tomlplusplus
-        run: |
-          cd ..
-          git clone https://github.com/marzer/tomlplusplus.git
-          cd tomlplusplus
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-          cmake --build build -j$(nproc)
-          cmake --install build
-          ldconfig
-          cd ../Hyprland
-          
+
       - name: Build and Install hyprcursor
         env:
           PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
@@ -143,6 +133,7 @@ jobs:
           cd build
           make install DESTDIR=../hyprland-deb
           cd ..
+          cmake --build build -j$(nproc)
 
           # Create the DEBIAN control file
           cat <<EOF > hyprland-deb/DEBIAN/control
