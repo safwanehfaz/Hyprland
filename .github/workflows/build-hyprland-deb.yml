@@ -85,7 +85,17 @@ jobs:
           cmake --build build -j$(nproc)
           sudo cmake --install build
           cd ../Hyprland
-      
+
+      - name: Build and Install tomlplusplus
+        run: |
+          cd ..
+          git clone https://github.com/marzer/tomlplusplus.git
+          cd tomlplusplus
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
+          
       - name: Build and Install hyprcursor
         run: |
           cd ..
