@@ -84,6 +84,16 @@ jobs:
           cmake --build build -j$(nproc)
           sudo cmake --install build
           cd ../Hyprland
+      
+      - name: Build and Install hyprcursor
+        run: |
+          cd ..
+          git clone https://github.com/hyprwm/hyprcursor.git
+          cd hyprcursor
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cmake --build build -j$(nproc)
+          sudo cmake --install build
+          cd ../Hyprland
           
       - name: Build Hyprland
         run: |
