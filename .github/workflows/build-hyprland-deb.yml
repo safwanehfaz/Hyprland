@@ -95,9 +95,12 @@ jobs:
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
           sudo cmake --install build
+          sudo ldconfig
           cd ../Hyprland
           
       - name: Build and Install hyprcursor
+        env:
+          PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
         run: |
           cd ..
           git clone https://github.com/hyprwm/hyprcursor.git
