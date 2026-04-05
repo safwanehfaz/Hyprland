@@ -6,10 +6,12 @@ on:
     - cron: '0 0 * * 0' # Optional: Run weekly to get the latest Hyprland updates
 jobs:
   build-deb:
-    runs-on: ubuntu-24.04 
+    runs-on: ubuntu-latest
+    container:
+      image: debian:unstable
     env:
-      CC: gcc-14
-      CXX: g++-14
+      CC: gcc
+      CXX: g++
     
     steps:
       - name: Checkout Hyprland Repository
@@ -17,12 +19,15 @@ jobs:
         with:
           repository: hyprwm/Hyprland
           submodules: recursive
+          fetch-depth: 0
+          fetch-tags: true
       
       - name: Install Build Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            gcc-14 g++-14 \
+          apt-get update
+          apt-get install -y \
+            git ca-certificates \
+            gcc g++ \
             build-essential cmake meson ninja-build pkg-config gettext \
             libwayland-dev libxkbcommon-dev libpixman-1-dev libwlroots-dev \
             libdrm-dev libdisplay-info-dev libglib2.0-dev \
@@ -31,21 +36,23 @@ jobs:
             libxcb-xfixes0-dev xwayland hwdata \
             glslang-dev glslang-tools wayland-protocols libvulkan-dev \
             libseat-dev libgbm-dev libudev-dev libpugixml-dev \
+            libinput-dev \
             libmtdev-dev libevdev-dev libwacom-dev \
             libfmt-dev libspdlog-dev \
             libzip-dev librsvg2-dev nlohmann-json3-dev \
-            libtomlplusplus-dev libmagic-dev
+            libtomlplusplus-dev libmagic-dev \
+            libxcursor-dev libre2-dev libmuparser-dev liblcms2-dev
 
-      - name: Build and Install libinput
+      - name: Verify pkg-config dependency versions
         run: |
-          cd ..
-          git clone https://gitlab.freedesktop.org/libinput/libinput.git
-          cd libinput
-          git checkout 1.26.0
-          meson setup build --prefix=/usr -Ddocumentation=false -Dtests=false -Ddebug-gui=false
-          ninja -C build
-          sudo ninja -C build install
-          cd ../Hyprland
+          pkg-config --modversion xkbcommon
+          pkg-config --modversion wayland-server
+          pkg-config --modversion wayland-protocols
+          pkg-config --modversion libinput
+          pkg-config --modversion xcursor
+          pkg-config --modversion re2
+          pkg-config --modversion muparser
+          pkg-config --modversion lcms2
 
       - name: Build and Install hyprwayland-scanner
         run: |
@@ -54,7 +61,7 @@ jobs:
           cd hyprwayland-scanner
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
 
       - name: Build and Install hyprutils
@@ -64,7 +71,7 @@ jobs:
           cd hyprutils
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
 
       - name: Build and Install Aquamarine
@@ -74,7 +81,7 @@ jobs:
           cd aquamarine
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
 
       - name: Build and Install hyprlang
@@ -84,7 +91,7 @@ jobs:
           cd hyprlang
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
 
       - name: Build and Install tomlplusplus
@@ -94,8 +101,8 @@ jobs:
           cd tomlplusplus
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
-          sudo ldconfig
+          cmake --install build
+          ldconfig
           cd ../Hyprland
           
       - name: Build and Install hyprcursor
@@ -107,7 +114,7 @@ jobs:
           cd hyprcursor
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
       
       - name: Build and Install hyprgraphics
@@ -117,7 +124,7 @@ jobs:
           cd hyprgraphics
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build build -j$(nproc)
-          sudo cmake --install build
+          cmake --install build
           cd ../Hyprland
           
       - name: Build Hyprland
