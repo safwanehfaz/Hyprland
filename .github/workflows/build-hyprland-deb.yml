@@ -157,9 +157,10 @@ jobs:
           # Create the DEBIAN control file
           git fetch --tags --force
           LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          VERSION=${LATEST_TAG#v}
           cat <<EOF > hyprland-deb/DEBIAN/control
           Package: hyprland
-          Version: $LATEST_TAG
+          Version: $VERSION
           Section: x11
           Priority: optional
           Architecture: $(dpkg --print-architecture)
