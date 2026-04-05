@@ -33,7 +33,7 @@ jobs:
             git ca-certificates \
             gcc g++ \
             build-essential cmake meson ninja-build pkg-config gettext \
-            libwayland-dev libxkbcommon-dev libpixman-1-dev libwlroots-dev \
+            libwayland-dev libxkbcommon-dev libpixman-1-dev \
             libdrm-dev libdisplay-info-dev libglib2.0-dev \
             libpango1.0-dev libxcb-composite0-dev libxcb-icccm4-dev \
             libxcb-res0-dev libxcb-render0-dev libxcb-shape0-dev \
